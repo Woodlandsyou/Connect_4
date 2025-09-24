@@ -25,6 +25,7 @@ const player = new Player("Red");
 function setup() {
     createCanvas(_width, _height);
 }
+
 function draw() {
     background(0);
     drawLines();
@@ -32,9 +33,10 @@ function draw() {
 }
 
 function mouseReleased() {
-    const x = floor(mouseX / s);
-    if(grid[x].length < rows) grid[x].push(player.current);
-    // checkForWin(x, floor(mouseY / s));
+    const x = floor(mouseX / s), y = floor(5 / (mouseY / s));
+    if(!(grid[x].length < rows)) return; 
+    grid[x].push(player.current);
+    checkForWin(x, y);
     player.current = !player.current;
 }
 
@@ -68,77 +70,54 @@ function checkForWin(i, jI) {
     const current = grid[i][j];
 
     // negative diagonal
-    if(checkNeighbours(i - 1, j + 1, current)) {
+    if(checkNeighbour(i - 1, j + 1, current)) {
         possibilities.push({x: -1, y: 1});
-    } else if(checkNeighbours(i + 1, j - 1, current)) {
-        possibilities.push(8);
+    } else if(checkNeighbour(i + 1, j - 1, current)) {
+        possibilities.push({x: 1, y: -1});
     }
 
     // vertical
-    if(checkNeighbours(i, j + 1, current)) {
-        possibilities.push(1);
-    } else if(checkNeighbours(i, j - 1, current)) {
-        possibilities.push(7);
+    if(checkNeighbour(i, j + 1, current)) {
+        possibilities.push({x: 0, y: 1});
+    } else if(checkNeighbour(i, j - 1, current)) {
+        possibilities.push({x: 0, y: -1});
     }
 
     // positive diagonal
-    if(checkNeighbours(i + 1, j + 1, current)) {
-        possibilities.push(2);
-    } else if(checkNeighbours(i - 1, j - 1, current)) {
-        possibilities.push(6);
+    if(checkNeighbour(i + 1, j + 1, current)) {
+        possibilities.push({x: 1, y: 1});
+    } else if(checkNeighbour(i - 1, j - 1, current)) {
+        possibilities.push({x: -1, y: -1});
     }
 
     // horizontal
-    if(checkNeighbours(i - 1, j, current)) {
-        possibilities.push(3);
-    } else if(checkNeighbours(i + 1, j, current)) {
-        possibilities.push(5);
+    if(checkNeighbour(i - 1, j, current)) {
+        possibilities.push({x: -1, y: 0});
+    } else if(checkNeighbour(i + 1, j, current)) {
+        possibilities.push({x: 1, y: 0});
     }
 
-    for (let i = 0; i < possibilities.length; i++) {
-        console.log(recurseInDirection(i, j, possibilities[i], 0));
-        
+    for (let k = 0; k < possibilities.length; k++) {
+        if(recurseInDirection(i, j, possibilities[k], current, 0) === 4) {
+            alert(`${current} has won`);
+        }
     }
 }
 
-function checkNeighbours(i, j, current) {
+function checkNeighbour(i, j, current) {
+    if(current === undefined) return;
     try{
         return grid[i][j] === current;
     } catch(e){}
     return false;
 }
 
-function recurseInDirection(i, j, dir, recursionCount) {
-    if(!checkForWin(i, j, dir)) return 1;
+function recurseInDirection(i, j, dir, current, recursionCount) {
+    if(!checkNeighbour(i + dir.x, j + dir.y, current)) return 1;
     else if(recursionCount > 2) return 1;
 
     let count = 0;
-    switch (dir) {
-        case 0:
-            count += recurseInDirection(i - 1, j + 1, dir, recursionCount + 1);
-            break;
-        case 1:
-            count += recurseInDirection(i, j + 1, dir, recursionCount + 1);
-            break;
-        case 2:
-            count += recurseInDirection(i + 1, j + 1, dir, recursionCount + 1);
-            break;
-        case 3:
-            count += recurseInDirection(i - 1, j, dir, recursionCount + 1);
-            break;
-        case 5:
-            count += recurseInDirection(i + 1, j, dir, recursionCount + 1);
-            break;
-        case 6:
-            count += recurseInDirection(i - 1, j - 1, dir, recursionCount + 1);
-            break;
-        case 7:
-            count += recurseInDirection(i, j - 1, dir, recursionCount + 1);
-            break;
-        case 8:
-            count += recurseInDirection(i + 1, j - 1, dir, recursionCount + 1);
-            break;
-    }
+    count += recurseInDirection(i + dir.x, j + dir.y, dir, current, recursionCount + 1)
     return count += 1;
 }
 
@@ -146,17 +125,17 @@ function testCheckNeighbours() {
     const j = grid[i].length - 1;
     const current = grid[i][j];
     //top right
-    if(checkNeighbours(i + 1, j + 1, current)) console.log("top right");
+    if(checkNeighbour(i + 1, j + 1, current)) console.log("top right");
     // right
-    if(checkNeighbours(i + 1, j, current)) console.log("right");
+    if(checkNeighbour(i + 1, j, current)) console.log("right");
     // bottom right
-    if(checkNeighbours(i + 1, j - 1, current)) console.log("bottom right");
+    if(checkNeighbour(i + 1, j - 1, current)) console.log("bottom right");
     //bottom
-    if(checkNeighbours(i, j - 1, current)) console.log("bottom");
+    if(checkNeighbour(i, j - 1, current)) console.log("bottom");
     // bottom left
-    if(checkNeighbours(i - 1, j - 1, current)) console.log("bottom left");
+    if(checkNeighbour(i - 1, j - 1, current)) console.log("bottom left");
     // left
-    if(checkNeighbours(i - 1, j, current)) console.log("left");
+    if(checkNeighbour(i - 1, j, current)) console.log("left");
     //top left
-    if(checkNeighbours(i - 1, j + 1, current)) console.log("top left");
+    if(checkNeighbour(i - 1, j + 1, current)) console.log("top left");
 }
