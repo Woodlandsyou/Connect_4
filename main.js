@@ -34,7 +34,7 @@ function draw() {
 function mouseReleased() {
     const x = floor(mouseX / s);
     if(grid[x].length < rows) grid[x].push(player.current);
-    checkForWin(x, floor(mouseY / s));
+    // checkForWin(x, floor(mouseY / s));
     player.current = !player.current;
 }
 
@@ -62,23 +62,84 @@ function displayPlates() {
     }
 }
 
-function checkForWin(i, num = undefined) {
-    const j = grid[i].length - 1;
+function checkForWin(i, jI) {
+    let possibilities = [];
+    const j = jI || grid[i].length - 1;
     const current = grid[i][j];
-    //top right
-    if(checkNeighbours(i + 1, j + 1, current)) console.log("top right");
-    // right
-    if(checkNeighbours(i + 1, j, current)) console.log("right");
-    // bottom right
-    if(checkNeighbours(i + 1, j - 1, current)) console.log("bottom right");
-    //bottom
-    if(checkNeighbours(i, j - 1, current)) console.log("bottom");    
+
+    // negative diagonal
+    if(checkNeighbours(i - 1, j + 1, current)) {
+        possibilities.push(0);
+    } else if(checkNeighbours(i + 1, j - 1, current)) {
+        possibilities.push(8);
+    }
+
+    // vertical
+    if(checkNeighbours(i, j + 1, current)) {
+        possibilities.push(1);
+    } else if(checkNeighbours(i, j - 1, current)) {
+        possibilities.push(7);
+    }
+
+    // positive diagonal
+    if(checkNeighbours(i + 1, j + 1, current)) {
+        possibilities.push(2);
+    } else if(checkNeighbours(i - 1, j - 1, current)) {
+        possibilities.push(6);
+    }
+
+    // horizontal
+    if(checkNeighbours(i - 1, j, current)) {
+        possibilities.push(3);
+    } else if(checkNeighbours(i + 1, j, current)) {
+        possibilities.push(5);
+    }
+
+    for (let i = 0; i < possibilities.length; i++) {
+        console.log(recurseInDirection(i, j, possibilities[i], 0));
+        
+    }
 }
 
 function checkNeighbours(i, j, current) {
     try{
         return grid[i][j] === current;
     } catch(e){}
+    return false;
+}
+
+function recurseInDirection(i, j, dir, recursionCount) {
+    if(!checkForWin(i, j, dir)) return 1;
+    else if(recursionCount > 2) return 1;
+
+    let count = 0;
+    switch (dir) {
+        case 0:
+            count += recurseInDirection(i - 1, j + 1, dir, recursionCount + 1);
+            break;
+        case 1:
+            count += recurseInDirection(i, j + 1, dir, recursionCount + 1);
+            break;
+        case 2:
+            count += recurseInDirection(i + 1, j + 1, dir, recursionCount + 1);
+            break;
+        case 3:
+            count += recurseInDirection(i - 1, j, dir, recursionCount + 1);
+            break;
+        case 5:
+            count += recurseInDirection(i + 1, j, dir, recursionCount + 1);
+            break;
+        case 6:
+            count += recurseInDirection(i - 1, j - 1, dir, recursionCount + 1);
+            break;
+        case 7:
+            count += recurseInDirection(i, j - 1, dir, recursionCount + 1);
+            break;
+        case 8:
+            count += recurseInDirection(i + 1, j - 1, dir, recursionCount + 1);
+            break;
+    }
+    return count += 1;
 }
 
 function testCheckNeighbours() {
