@@ -69,7 +69,7 @@ function checkForWin(i, jI) {
 
     // negative diagonal
     if(checkNeighbours(i - 1, j + 1, current)) {
-        possibilities.push(0);
+        possibilities.push({x: -1, y: 1});
     } else if(checkNeighbours(i + 1, j - 1, current)) {
         possibilities.push(8);
     }
