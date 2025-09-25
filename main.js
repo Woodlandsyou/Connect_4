@@ -98,7 +98,10 @@ function checkForWin(i, jI) {
     }
 
     for (let k = 0; k < possibilities.length; k++) {
-        if(recurseInDirection(i, j, possibilities[k], current, 0) === 4) {
+        let count = recurseInDirection(i, j, possibilities[k], current, 0);
+        if(count === 4) {
+            alert(`${current} has won`);
+        } else if(count + recurseInDirection(i, j, {x: possibilities[k].x * -1, y: possibilities[k].y * -1}, current, 0) - 1 === 4) {
             alert(`${current} has won`);
         }
     }
@@ -119,23 +122,4 @@ function recurseInDirection(i, j, dir, current, recursionCount) {
     let count = 0;
     count += recurseInDirection(i + dir.x, j + dir.y, dir, current, recursionCount + 1)
     return count += 1;
-}
-
-function testCheckNeighbours() {
-    const j = grid[i].length - 1;
-    const current = grid[i][j];
-    //top right
-    if(checkNeighbour(i + 1, j + 1, current)) console.log("top right");
-    // right
-    if(checkNeighbour(i + 1, j, current)) console.log("right");
-    // bottom right
-    if(checkNeighbour(i + 1, j - 1, current)) console.log("bottom right");
-    //bottom
-    if(checkNeighbour(i, j - 1, current)) console.log("bottom");
-    // bottom left
-    if(checkNeighbour(i - 1, j - 1, current)) console.log("bottom left");
-    // left
-    if(checkNeighbour(i - 1, j, current)) console.log("left");
-    //top left
-    if(checkNeighbour(i - 1, j + 1, current)) console.log("top left");
 }
