@@ -17,3 +17,7 @@ h1 {
     color: white;
     font-size: 10vh;
 }
+
+canvas {
+    box-shadow: 0.2vh 0.2vh 3vh white;
+}

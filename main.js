@@ -100,7 +100,7 @@ function checkForWin(i, jI) {
     for (let k = 0; k < possibilities.length; k++) {
         let count = recurseInDirection(i, j, possibilities[k], current, 0);
         if(count + recurseInDirection(i, j, {x: possibilities[k].x * -1, y: possibilities[k].y * -1}, current, 0) - 1 >= 4) {
-            alert(`${current ? "Yellow":"Red"} has won`);
+            setTimeout(() => {alert(`${current ? "Yellow":"Red"} has won`)}, 50);;
         }
     }
 }
